@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecommerce-ui
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: ecommerce-ui
+  template:
+    metadata:
+      labels:
+        component: ecommerce-ui
+    spec:
+      containers:
+        - name: ecommerce-ui
+          image: man7ober/ecommerce-ui:latest
+          ports:
+            - containerPort: 4000
+          envFrom:
+            - configMapRef:
+                name: ecommerce-ui-configmap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ecommerce-ui-service
+spec:
+  type: ClusterIP
+  selector:
+    component: ecommerce-ui
+  ports:
+    - name: ecommerce-ui
+      protocol: TCP
+      port: 80
+      targetPort: 4000
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ecommerce-ui-configmap
+data:
+  REACT_APP_PROFILE_API_HOST: 'http://profile-management-service'
+  REACT_APP_SHIPPING_API_HOST: 'http://shipping-and-handling-service'
+  REACT_APP_CONTACT_API_HOST: 'http://contact-support-service'
+  REACT_APP_INVENTORY_API_HOST: 'http://product-inventory-service'
+  REACT_APP_PRODUCT_API_HOST: 'http://product-catalog-service'
+  REACT_APP_ORDER_API_HOST: 'http://order-management-service'

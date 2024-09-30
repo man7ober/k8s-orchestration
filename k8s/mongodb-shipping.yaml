@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb-shipping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: mongodb-shipping
+  template:
+    metadata:
+      labels:
+        component: mongodb-shipping
+    spec:
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mongodb-shipping-volume
+      containers:
+        - name: mongodb-shipping
+          image: mongo
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: data
+              mountPath: /data/db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-shipping-service
+spec:
+  type: ClusterIP
+  selector:
+    component: mongodb-shipping
+  ports:
+    - name: mongodb-shipping
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-shipping-volume
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi

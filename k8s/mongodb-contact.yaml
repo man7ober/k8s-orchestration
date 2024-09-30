@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb-contact
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: mongodb-contact
+  template:
+    metadata:
+      labels:
+        component: mongodb-contact
+    spec:
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mongodb-contact-volume
+      containers:
+        - name: mongodb-contact
+          image: mongo
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: data
+              mountPath: /data/db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-contact-service
+spec:
+  type: ClusterIP
+  selector:
+    component: mongodb-contact
+  ports:
+    - name: mongodb-contact
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-contact-volume
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi

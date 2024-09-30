@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shipping-and-handling
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: shipping-and-handling
+  template:
+    metadata:
+      labels:
+        component: shipping-and-handling
+    spec:
+      containers:
+        - name: shipping-and-handling
+          image: man7ober/shipping-and-handling:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: shipping-and-handling-configmap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shipping-and-handling-service
+spec:
+  type: ClusterIP
+  selector:
+    component: shipping-and-handling
+  ports:
+    - name: shipping-and-handling
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shipping-and-handling-configmap
+data:
+  MONGO_URI: 'mongodb://mongodb-shipping-service:27017'

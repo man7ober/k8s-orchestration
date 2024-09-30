@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: profile-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: profile-management
+  template:
+    metadata:
+      labels:
+        component: profile-management
+    spec:
+      containers:
+        - name: profile-management
+          image: man7ober/profile-management:latest
+          ports:
+            - containerPort: 3003
+          envFrom:
+            - configMapRef:
+                name: profile-management-configmap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: profile-management-service
+spec:
+  type: ClusterIP
+  selector:
+    component: profile-management
+  ports:
+    - name: profile-management
+      protocol: TCP
+      port: 3003
+      targetPort: 3003
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: profile-management-configmap
+data:
+  MYSQL_HOST: 'mysql-profile-service' # mysql service name
+  MYSQL_PORT: '3306'
+  MYSQL_DATABASE: 'profile_management'
+  MYSQL_USER: 'profile_user'
+  MYSQL_PASSWORD: 'profile_password'

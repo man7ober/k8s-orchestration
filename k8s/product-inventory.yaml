@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-inventory
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: product-inventory
+  template:
+    metadata:
+      labels:
+        component: product-inventory
+    spec:
+      containers:
+        - name: product-inventory
+          image: man7ober/product-inventory:latest
+          ports:
+            - containerPort: 3002
+          envFrom:
+            - configMapRef:
+                name: product-inventory-configmap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-inventory-service
+spec:
+  type: ClusterIP
+  selector:
+    component: product-inventory
+  ports:
+    - name: product-inventory
+      protocol: TCP
+      port: 3002
+      targetPort: 3002
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: product-inventory-configmap
+data:
+  POSTGRES_HOST: 'postgres-inventory-service' # postgres service name
+  POSTGRES_PORT: '5432'
+  POSTGRES_DB: 'product_inventory'
+  POSTGRES_USER: 'inventory_user'
+  POSTGRES_PASSWORD: 'inventory_password'
