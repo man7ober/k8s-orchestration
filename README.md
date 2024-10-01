@@ -42,7 +42,7 @@
 - KUBELET / makes sure that containers are running in a pod
 - KUBE PROXY / forwards the requests (network proxy)
 
-### Commands
+### Commands :
 
 **01 - SHOW STATUS (COMPONENTS)**
 
