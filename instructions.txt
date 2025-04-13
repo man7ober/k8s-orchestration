@@ -1,6 +1,8 @@
 Step 1 - Install docker desktop and enable kubernetes
 Step 2 - Move to k8s folder
 Step 3 - Check ingress.yaml file
-Step 4 - Create kubectl apply -f .
-Step 5 - Nginx server will run on http://localhost
-Step 6 - Destroy kubectl delete all --all
+Step 4 - Run ingress service first "kubectl apply -f ingress.yaml"
+Step 5 - Run "kubectl apply -f ."
+Step 6 - Nginx server will run on "http://localhost"
+Step 7 - Destroy "kubectl delete -f . --all"
+Step 8 - Destroy "kubectl delete -f ingress-controller"
